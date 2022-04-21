@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -19,17 +21,18 @@ def get_content(html):
         title = item.find('a', class_='address').get_text().strip()
         year = title[-4:]
         cars.append({
-            'title': item.find('a', class_='address').get_text()[0:-5].strip(),
+            'title': title[0:-5].strip(),
+            'link': item.find('a', class_='address').get('href'),
             'price': item.find('span', class_='bold green size22').get_text().strip(),
-            'year': year
+            'year': year,
+            'city': item.find('li', class_='item-char view-location js-location').get_text().replace(' ( от )', '').strip()
         })
-    print(cars)
+    return cars
 
 def parse():
     html = get_html(URL)
     if html.status_code == 200:
-        get_content(html.text)
-        # print(html.text)
+        cars = get_content(html.text)
     else:
         print('Error')
 
